@@ -1,13 +1,15 @@
-package souza.luiz.forum.hub.domain.topico;
+package souza.luiz.forum.hub.domain.model.topico;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import souza.luiz.forum.hub.domain.curso.Curso;
-import souza.luiz.forum.hub.domain.resposta.Resposta;
-import souza.luiz.forum.hub.domain.usuario.Usuario;
+import org.hibernate.query.internal.ModelPartResultMementoBasicImpl;
+import souza.luiz.forum.hub.domain.model.ModelInterface;
+import souza.luiz.forum.hub.domain.model.curso.Curso;
+import souza.luiz.forum.hub.domain.model.resposta.Resposta;
+import souza.luiz.forum.hub.domain.model.usuario.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Topico {
+public class Topico implements ModelInterface {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,9 +30,24 @@ public class Topico {
     private LocalDateTime dataCriacao;
     private Status statusTopico;
     @ManyToOne()
+    @JoinColumn(name = "idAutor")
     private Usuario autor;
     @ManyToOne()
+    @JoinColumn(name = "idCurso")
     private Curso curso;
     @OneToMany(mappedBy = "topico",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Resposta> respostas = new ArrayList<>();
+    private boolean ativo;
+
+
+    @Override
+    public void ativar() {
+        this.ativo = true;
+    }
+
+    @Override
+    public void desativar() {
+        this.ativo = false;
+    }
+
 }

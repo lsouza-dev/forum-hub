@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import souza.luiz.forum.hub.domain.dto.curso.DadosAtualizacaoCurso;
 import souza.luiz.forum.hub.domain.dto.curso.DadosCadastroCurso;
+import souza.luiz.forum.hub.domain.dto.usuario.DadosCadastroUsuario;
 import souza.luiz.forum.hub.domain.model.ModelInterface;
 
 @Entity
@@ -30,6 +31,7 @@ public class Curso implements ModelInterface {
         this.categoria = dados.categoria();
         this.ativo = true;
     }
+
 
     @Override
     public void ativar() {

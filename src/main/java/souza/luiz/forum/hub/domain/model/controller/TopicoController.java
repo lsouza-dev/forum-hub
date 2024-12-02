@@ -1,5 +1,6 @@
 package souza.luiz.forum.hub.domain.model.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/topico")
+@SecurityRequirement(name = "bearer-key")
 public class TopicoController {
 
     @Autowired

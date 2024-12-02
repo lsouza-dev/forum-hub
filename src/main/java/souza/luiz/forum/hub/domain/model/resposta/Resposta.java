@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import souza.luiz.forum.hub.domain.model.ModelInterface;
 import souza.luiz.forum.hub.domain.model.topico.Topico;
 import souza.luiz.forum.hub.domain.model.usuario.Usuario;
 
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Resposta implements ModelInterface {
+public class Resposta {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String mensagem;
@@ -32,12 +31,10 @@ public class Resposta implements ModelInterface {
     private boolean ativo;
 
 
-    @Override
     public void ativar() {
         this.ativo = true;
     }
 
-    @Override
     public void desativar() {
         this.ativo = false;
     }

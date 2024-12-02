@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import souza.luiz.forum.hub.domain.dto.curso.DadosAtualizacaoCurso;
 import souza.luiz.forum.hub.domain.dto.curso.DadosCadastroCurso;
-import souza.luiz.forum.hub.domain.dto.usuario.DadosCadastroUsuario;
-import souza.luiz.forum.hub.domain.model.ModelInterface;
 
 @Entity
 @Table(name = "cursos")
@@ -17,7 +15,7 @@ import souza.luiz.forum.hub.domain.model.ModelInterface;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Curso implements ModelInterface {
+public class Curso {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,13 +30,10 @@ public class Curso implements ModelInterface {
         this.ativo = true;
     }
 
-
-    @Override
     public void ativar() {
         this.ativo = true;
     }
 
-    @Override
     public void desativar() {
         this.ativo = false;
     }

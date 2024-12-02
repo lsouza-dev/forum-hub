@@ -1,5 +1,6 @@
 package souza.luiz.forum.hub.domain.model.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import souza.luiz.forum.hub.domain.dto.usuario.DadosAtualizacaoUsuario;
@@ -19,6 +21,7 @@ import souza.luiz.forum.hub.domain.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/usuario")
+@SecurityRequirement(name = "bearer-key")
 public class UsuarioController {
 
     @Autowired
@@ -27,10 +30,16 @@ public class UsuarioController {
     @Autowired
     private PerfilRepository perfilRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar (@RequestBody @Valid DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder){
         var usuario = new Usuario(dados);
+        var senha = encoder.encode(usuario.getPassword());
+        usuario.setSenha(senha);
+
         usuario.setPerfil(perfilRepository.getReferenceById(dados.idPerfil()));
         usuarioRepository.save(usuario);
 

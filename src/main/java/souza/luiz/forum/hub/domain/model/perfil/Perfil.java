@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import souza.luiz.forum.hub.domain.dto.perfil.DadosAtualizacaoPerfil;
-import souza.luiz.forum.hub.domain.model.ModelInterface;
 
 @Entity
 @Table(name = "perfis")
@@ -15,7 +14,7 @@ import souza.luiz.forum.hub.domain.model.ModelInterface;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Perfil implements ModelInterface {
+public class Perfil  {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
@@ -28,12 +27,10 @@ public class Perfil implements ModelInterface {
         ativo = true;
     }
 
-    @Override
     public void ativar() {
         this.ativo = true;
     }
 
-    @Override
     public void desativar() {
         this.ativo = false;
     }

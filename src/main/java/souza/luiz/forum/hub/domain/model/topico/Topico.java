@@ -2,17 +2,13 @@ package souza.luiz.forum.hub.domain.model.topico;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.query.internal.ModelPartResultMementoBasicImpl;
 import souza.luiz.forum.hub.domain.dto.topico.DadosAtualizacaoTopico;
 import souza.luiz.forum.hub.domain.dto.topico.DadosCadastroTopico;
-import souza.luiz.forum.hub.domain.model.ModelInterface;
 import souza.luiz.forum.hub.domain.model.curso.Curso;
 import souza.luiz.forum.hub.domain.model.resposta.Resposta;
 import souza.luiz.forum.hub.domain.model.usuario.Usuario;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Topico implements ModelInterface {
+public class Topico  {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,12 +52,12 @@ public class Topico implements ModelInterface {
     }
 
 
-    @Override
+
     public void ativar() {
         this.ativo = true;
     }
 
-    @Override
+
     public void desativar() {
         this.ativo = false;
     }

@@ -1,0 +1,120 @@
+package souza.luiz.forum.hub.domain.model.controller;
+
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+import souza.luiz.forum.hub.domain.dto.topico.DadosAtualizacaoTopico;
+import souza.luiz.forum.hub.domain.dto.topico.DadosCadastroTopico;
+import souza.luiz.forum.hub.domain.dto.topico.DadosDetalhamentoTopico;
+import souza.luiz.forum.hub.domain.model.curso.Categoria;
+import souza.luiz.forum.hub.domain.model.topico.Topico;
+import souza.luiz.forum.hub.domain.repository.CursoRepository;
+import souza.luiz.forum.hub.domain.repository.TopicoRepository;
+import souza.luiz.forum.hub.domain.repository.UsuarioRepository;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+@RestController
+@RequestMapping("/topico")
+public class TopicoController {
+
+    @Autowired
+    private TopicoRepository topicoRepository;
+
+    @Autowired
+    private CursoRepository cursoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @PostMapping
+    @Transactional
+    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
+        var topico = new Topico(dados);
+        topico.setCurso(cursoRepository.getReferenceById(dados.idCurso()));
+        topico.setAutor(usuarioRepository.getReferenceById(dados.idAutor()));
+
+        if(topicoRepository.existsByTituloOrMensagem(dados.titulo(),dados.mensagem())) throw new ValidationException("Tópico já existente, insira outro título e mensagem e tente novamente.");
+        System.out.println(topico);
+        topicoRepository.save(topico);
+
+        var uri = uriBuilder.path("/topico/{id}").buildAndExpand(topico.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoTopico(topico));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DadosDetalhamentoTopico>> listar (@PageableDefault(size = 10,sort = "dataCriacao",direction = Sort.Direction.DESC) Pageable paginacao){
+        var topicos = topicoRepository.findAll(paginacao).map(DadosDetalhamentoTopico::new);
+        return ResponseEntity.ok().body(topicos);
+
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity detalhar (@PathVariable Long id){
+        var topico = topicoRepository.getReferenceById(id);
+        return ResponseEntity.ok().body(new DadosDetalhamentoTopico((topico)));
+
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public  ResponseEntity excluir(@PathVariable Long id){
+        var topicoBuscado = topicoRepository.findById(id);
+        if(topicoBuscado.isEmpty()) throw new ValidationException("Não existe um tópico com o ID informado.");
+
+        topicoRepository.deleteById(topicoBuscado.get().getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoTopico dados,@PathVariable Long id){
+        var topicoBuscado = topicoRepository.findById(id);
+        if(topicoBuscado.isEmpty()) throw new ValidationException("Não existe um tópico com o ID informado.");
+
+        var topico = topicoBuscado.get();
+        topico.atualizar(dados);
+        if(dados.idAutor() != null) topico.setAutor(usuarioRepository.getReferenceById(dados.idAutor()));
+        if(dados.idCurso() != null) topico.setCurso(cursoRepository.getReferenceById(dados.idCurso()));
+
+        return ResponseEntity.ok().body(new DadosDetalhamentoTopico(topico));
+    }
+
+
+    @GetMapping("/curso/{nomeCurso}")
+    public ResponseEntity<Page<DadosDetalhamentoTopico>> listarPorNomeDoCurso(@PathVariable String nomeCurso,Pageable paginacao){
+        var topicos = topicoRepository.buscarTopicosPorNomeDoCurso(paginacao,nomeCurso).map(DadosDetalhamentoTopico::new);
+        return ResponseEntity.ok().body(topicos);
+    }
+
+    @GetMapping("/categoria/{categoria}")
+        public ResponseEntity<Page<DadosDetalhamentoTopico>> listarPorCategoriaDoCurso(@PathVariable String categoria, Pageable paginacao){
+        var categoriaBuscada = Arrays.stream(Categoria.values()).filter(
+                c -> c.name().contains(categoria.toUpperCase()))
+                        .findFirst();
+
+        if(!categoriaBuscada.isPresent()) throw new ValidationException("A categoria de curso informada não existe.");
+
+        System.out.println(categoriaBuscada);
+
+        var topicos = topicoRepository.buscarTopicosPorCategoria(paginacao,categoriaBuscada.get()).map(DadosDetalhamentoTopico::new);
+        return ResponseEntity.ok().body(topicos);
+    }
+
+    @GetMapping("/ano/{ano}")
+    public ResponseEntity<Page<DadosDetalhamentoTopico>> listarPorAnoCriacao(@PathVariable int ano, Pageable paginacao){
+        var topicos = topicoRepository.buscarTopicosPorAnoDeCriacao(paginacao,ano).map(DadosDetalhamentoTopico::new);
+        return ResponseEntity.ok().body(topicos);
+    }
+
+}

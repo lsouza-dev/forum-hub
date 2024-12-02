@@ -1,6 +1,7 @@
 package souza.luiz.forum.hub.infra.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ValidationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,13 @@ public class ValidadorDeErros {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity tratarDuplicidadeDeDados(DataIntegrityViolationException ex){
-        String mensagem = "Erro: Não é possível inserir os dados informados, você está tentando insrir um campo único nom qual já existe um registro.";
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(mensagem);
+        //String mensagem = "Erro: Não é possível inserir os dados informados, você está tentando insrir um campo único nom qual já existe um registro.";
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getLocalizedMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity tratarRegraDeNegocio(ValidationException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     private record DadosErroValidacao(String campo,String mensagem){

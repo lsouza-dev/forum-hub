@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -39,7 +40,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<DadosDetalhamentoUsuario>> listar(Pageable paginacao){
+    public ResponseEntity<Page<DadosDetalhamentoUsuario>> listar(@PageableDefault(sort = "id") Pageable paginacao){
         var usuarios = usuarioRepository.findByAtivoTrue(paginacao).map(DadosDetalhamentoUsuario::new);
         return ResponseEntity.ok(usuarios);
     }
@@ -60,5 +61,13 @@ public class UsuarioController {
     public ResponseEntity detalhar(@PathVariable Long id){
         var usuario = usuarioRepository.getReferenceById(id);
         return ResponseEntity.ok().body(new DadosDetalhamentoUsuario(usuario));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity desativar(@PathVariable Long id){
+        var usuario = usuarioRepository.getReferenceById(id);
+        usuario.desativar();
+        return ResponseEntity.noContent().build();
     }
 }

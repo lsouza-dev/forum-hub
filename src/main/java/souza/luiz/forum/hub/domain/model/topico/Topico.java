@@ -1,5 +1,7 @@
 package souza.luiz.forum.hub.domain.model.topico;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -40,6 +42,7 @@ public class Topico  {
     @JoinColumn(name = "idCurso")
     private Curso curso;
     @OneToMany(mappedBy = "topico",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Resposta> respostas = new ArrayList<>();
     private boolean ativo;
 

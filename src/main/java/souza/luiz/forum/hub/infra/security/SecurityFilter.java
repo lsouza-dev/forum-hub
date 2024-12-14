@@ -2,7 +2,6 @@ package souza.luiz.forum.hub.infra.security;
 
 
 // Importações necessárias para implementar o filtro de segurança
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +36,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             // Extrai o subject (usuário) do token
             var subject = tokenService.getSubject(tokenJWT);
             // Busca o usuário no repositório pelo login
-            var usuario = repository.findByEmail(subject);
+            var usuario = repository.findByLogin(subject);
 
             // Cria um objeto de autenticação com as informações do usuário
             var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());

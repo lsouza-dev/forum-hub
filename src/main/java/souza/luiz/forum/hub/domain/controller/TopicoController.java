@@ -1,4 +1,4 @@
-package souza.luiz.forum.hub.domain.model.controller;
+package souza.luiz.forum.hub.domain.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
@@ -15,11 +15,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import souza.luiz.forum.hub.domain.dto.topico.DadosAtualizacaoTopico;
 import souza.luiz.forum.hub.domain.dto.topico.DadosCadastroTopico;
 import souza.luiz.forum.hub.domain.dto.topico.DadosDetalhamentoTopico;
+import souza.luiz.forum.hub.domain.dto.topico.DadosDetalhamentoTopicoRespondido;
 import souza.luiz.forum.hub.domain.model.curso.Categoria;
+import souza.luiz.forum.hub.domain.model.topico.Status;
 import souza.luiz.forum.hub.domain.model.topico.Topico;
 import souza.luiz.forum.hub.domain.repository.CursoRepository;
+import souza.luiz.forum.hub.domain.repository.RespostaRepository;
 import souza.luiz.forum.hub.domain.repository.TopicoRepository;
 import souza.luiz.forum.hub.domain.repository.UsuarioRepository;
+import souza.luiz.forum.hub.domain.service.RespostaService;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -37,6 +41,12 @@ public class TopicoController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private RespostaRepository respostaRepository;
+
+    @Autowired
+    private RespostaService respostaService;
 
     @PostMapping
     @Transactional
@@ -90,6 +100,30 @@ public class TopicoController {
         if(dados.idCurso() != null) topico.setCurso(cursoRepository.getReferenceById(dados.idCurso()));
 
         return ResponseEntity.ok().body(new DadosDetalhamentoTopico(topico));
+    }
+
+    @PostMapping("/responder={idResposta}")
+    @Transactional
+    public ResponseEntity<DadosDetalhamentoTopico>  responderTopico(@PathVariable Long idResposta){
+        var resposta = respostaService.obterResposta(idResposta);
+        resposta.responder();
+
+        var topico = resposta.getTopico();
+        topico.setStatusTopico(Status.RESPONDIDO);
+
+        topicoRepository.save(topico);
+
+        return ResponseEntity.ok().body(new DadosDetalhamentoTopico(topico));
+    }
+
+    @GetMapping("id={idTopico}/resposta")
+    public ResponseEntity respostaTopico(Long idTopico){
+        var topico = topicoRepository.findById(idTopico)
+                .orElseThrow(() -> new ValidationException(String.format("Tópico com ID %d não existe.", idTopico)));
+
+        var resposta = respostaService.obterRespostaTopicoRespondido(topico);
+
+        return ResponseEntity.ok().body(new DadosDetalhamentoTopicoRespondido(topico,resposta));
     }
 
 

@@ -1,8 +1,9 @@
-package souza.luiz.forum.hub.domain.model.controller;
+package souza.luiz.forum.hub.domain.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,9 @@ public class UsuarioController {
         var usuario = new Usuario(dados);
         var senha = encoder.encode(usuario.getPassword());
         usuario.setSenha(senha);
+
+        var existente = usuarioRepository.existsByLogin(dados.email());
+        if(existente) throw new ValidationException("Já existe um usuário com o email inserido.");
 
         usuario.setPerfil(perfilRepository.getReferenceById(dados.idPerfil()));
         usuarioRepository.save(usuario);

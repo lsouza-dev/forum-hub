@@ -11,7 +11,7 @@ public record DadosDetalhamentoUsuario(
         boolean ativo
 ) {
     public DadosDetalhamentoUsuario(Usuario usuario){
-        this(usuario.getId(),usuario.getNome(),usuario.getEmail(),usuario.getPerfil().getId(),usuario.isAtivo());
+        this(usuario.getId(),usuario.getNome(),usuario.getLogin(),usuario.getPerfil().getId(),usuario.isAtivo());
     }
 
 }

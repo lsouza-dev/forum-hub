@@ -1,5 +1,7 @@
 package souza.luiz.forum.hub.domain.dto.topico;
 
+import souza.luiz.forum.hub.domain.dto.curso.DadosDetalhamentoCurso;
+import souza.luiz.forum.hub.domain.dto.usuario.DadosDetalhamentoUsuario;
 import souza.luiz.forum.hub.domain.model.topico.Status;
 import souza.luiz.forum.hub.domain.model.topico.Topico;
 
@@ -10,8 +12,8 @@ public record DadosDetalhamentoTopico(
         String mensagem,
         LocalDateTime dataCriacao,
         Status status,
-        Long idAutor,
-        Long idCurso
+        DadosDetalhamentoUsuario usuario,
+        DadosDetalhamentoCurso Curso
 ) {
     public DadosDetalhamentoTopico(Topico topico) {
         this(
@@ -19,8 +21,8 @@ public record DadosDetalhamentoTopico(
                 topico.getMensagem(),
                 topico.getDataCriacao(),
                 topico.getStatusTopico(),
-                topico.getAutor().getId(),
-                topico.getCurso().getId()
+                new DadosDetalhamentoUsuario(topico.getAutor()),
+                new DadosDetalhamentoCurso(topico.getCurso())
         );
     }
 }

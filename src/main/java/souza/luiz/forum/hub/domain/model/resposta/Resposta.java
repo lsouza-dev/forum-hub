@@ -1,10 +1,10 @@
 package souza.luiz.forum.hub.domain.model.resposta;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.Valid;
+import lombok.*;
+import souza.luiz.forum.hub.domain.dto.resposta.DadosAtualizacaoResposta;
+import souza.luiz.forum.hub.domain.dto.resposta.DadosCadastroResposta;
 import souza.luiz.forum.hub.domain.model.topico.Topico;
 import souza.luiz.forum.hub.domain.model.usuario.Usuario;
 
@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "respostas")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -27,8 +28,15 @@ public class Resposta {
     @ManyToOne()
     @JoinColumn(name = "idAutor")
     private Usuario autor;
-    private String solucao;
+    private boolean solucao;
     private boolean ativo;
+
+    public Resposta(@Valid DadosCadastroResposta dados) {
+        this.mensagem = dados.mensagem();
+        this.dataCriacao = LocalDateTime.now();
+        this.solucao = false;
+        this.ativo = true;
+    }
 
 
     public void ativar() {
@@ -39,4 +47,11 @@ public class Resposta {
         this.ativo = false;
     }
 
+    public void atualizar(@Valid DadosAtualizacaoResposta dados) {
+        this.mensagem = dados.mensagem();
+    }
+
+    public void responder(){
+        this.solucao = true;
+    }
 }

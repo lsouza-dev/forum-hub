@@ -26,8 +26,6 @@ public class Usuario implements UserDetails {
     private Long id;
     private String nome;
     @Column(unique = true)
-    private String email;
-    @Column(unique = true)
     private String login;
     @Column(name = "senha")
     private String senha;
@@ -38,10 +36,9 @@ public class Usuario implements UserDetails {
 
     public Usuario(@Valid DadosCadastroUsuario dados) {
         this.nome = dados.nome();
-        this.email = dados.email();
         this.senha = dados.senha();
         this.ativo = true;
-        this.login = this.email;
+        this.login = dados.email();
     }
 
 
@@ -55,7 +52,7 @@ public class Usuario implements UserDetails {
 
     public void atualizar(@Valid DadosAtualizacaoUsuario dados) {
         if(dados.nome() != null) this.nome = dados.nome();
-        if(dados.email() != null) this.email = dados.email();
+        if(dados.email() != null) this.login = dados.email();
         if(dados.senha() != null) this.nome = dados.senha();
     }
 
@@ -64,7 +61,6 @@ public class Usuario implements UserDetails {
         return "Usuario{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + senha + '\'' +
                 ", perfil=" + perfil +

@@ -1,4 +1,4 @@
-package souza.luiz.forum.hub.domain.model.controller;
+package souza.luiz.forum.hub.domain.controller;
 
 // Importações necessárias para trabalhar com validação, autenticação e geração de tokens JWT
 import jakarta.validation.Valid;
